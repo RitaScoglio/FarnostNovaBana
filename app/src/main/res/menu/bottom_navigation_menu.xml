@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_news"
+        android:enabled="true"
+        android:icon="@drawable/ic_icon_book"
+        android:title="@string/bottom_nav_menu_option_1"/>
+    <item
+        android:id="@+id/menu_mass_information"
+        android:enabled="true"
+        android:icon="@drawable/ic_icon_book"
+        android:title="@string/bottom_nav_menu_option_2"/>
+    <item
+        android:id="@+id/menu_day_thought"
+        android:enabled="true"
+        android:icon="@drawable/ic_icon_book"
+        android:title="@string/bottom_nav_menu_option_3"/>
+    <item
+        android:id="@+id/menu_calendar"
+        android:enabled="true"
+        android:icon="@drawable/ic_icon_book"
+        android:title="@string/bottom_nav_menu_option_4"/>
+    <item
+        android:id="@+id/menu_contact"
+        android:enabled="true"
+        android:icon="@drawable/ic_icon_book"
+        android:title="@string/bottom_nav_menu_option_5"/>
+</menu>

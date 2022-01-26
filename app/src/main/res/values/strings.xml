@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Farnosť Nová Baňa</string>
+    <string name="bottom_nav_menu_option_1">Aktuality</string>
+    <string name="bottom_nav_menu_option_2">Oznamy</string>
+    <string name="bottom_nav_menu_option_3">Zamyslenia</string>
+    <string name="bottom_nav_menu_option_4">Kalendár</string>
+    <string name="bottom_nav_menu_option_5">Kontakt</string>
+</resources>
