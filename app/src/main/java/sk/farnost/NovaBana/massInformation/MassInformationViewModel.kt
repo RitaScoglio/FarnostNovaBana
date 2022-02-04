@@ -12,7 +12,9 @@ class MassInformationViewModel : ViewModel() {
 
     fun retrieveFilePath(context: Context) {
         val sharedPref = context.getSharedPreferences("MassInfo", Context.MODE_PRIVATE)
-        filePath.value = sharedPref.getString("filePath", "")
+        val path: String = sharedPref.getString("filePath", "")!!
+        if(!File(path).exists())
+            filePath.value = ""
+        else filePath.value = path
     }
-
 }

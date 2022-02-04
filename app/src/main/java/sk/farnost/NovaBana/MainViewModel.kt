@@ -1,31 +1,18 @@
 package sk.farnost.NovaBana
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.DownloadManager
 import android.content.Context
-import android.content.pm.PackageManager
-import android.database.Cursor
-import android.net.Uri
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Environment
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
-import sk.farnost.NovaBana.massInformation.MassInfoDownloader
-import sk.farnost.NovaBana.massInformation.MassInformationViewModel
+import sk.farnost.NovaBana.download.MassInfoDownloader
 import java.io.File
-import java.io.IOException
-import java.lang.Exception
 import java.util.*
 
 open class MainViewModel  : ViewModel() {
@@ -71,19 +58,46 @@ open class MainViewModel  : ViewModel() {
         calendar.add(Calendar.DAY_OF_YEAR, -7)
         val previousWeek = calendar.get(Calendar.WEEK_OF_YEAR)
         val path = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-        val massInfoFile = File("${path}/oznamy-${currentWeek}.pdf")
+        if(isConnectedToInternet(context))
+            saveCurrentWeek(path, "oznamy-${currentWeek}.pdf", context)
+        deletePreviousWeek("${path}/oznamy-${previousWeek}.pdf")
+    }
+
+    private fun saveCurrentWeek(path: File?, filename: String, context: Context) {
+        val massInfoFile = File("${path}/${filename}")
         if(!massInfoFile.exists()){
             val downloader = MassInfoDownloader()
-            viewModelScope.launch {
-                val massInfoFilePath = downloader.runDownload(context, currentWeek)
+            viewModelScope.async {
+                val massInfoFilePath = downloader.runDownload(context, filename)
                 val editor = context.getSharedPreferences("MassInfo", Context.MODE_PRIVATE).edit()
                 editor.putString("filePath", massInfoFilePath)
                 editor.apply()
             }
         }
-        val massInfoFilePrevious = File("${path}/oznamy-${previousWeek}.pdf")
+    }
+
+    private fun deletePreviousWeek(path: String) {
+        val massInfoFilePrevious = File(path)
         if(massInfoFilePrevious.exists())
             massInfoFilePrevious.delete()
     }
 
+
+    private fun isConnectedToInternet(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+            return when {
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                else -> false
+            }
+        } else {
+            @Suppress("DEPRECATION") val networkInfo =
+                connectivityManager.activeNetworkInfo ?: return false
+            @Suppress("DEPRECATION")
+            return networkInfo.isConnected
+        }
+    }
 }

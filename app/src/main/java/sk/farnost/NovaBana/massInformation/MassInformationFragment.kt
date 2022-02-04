@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import sk.farnost.NovaBana.MainViewModel
 import sk.farnost.NovaBana.databinding.MassInformationFragmentBinding
@@ -40,6 +41,8 @@ class MassInformationFragment : Fragment() {
         viewModel.filePath.observe(viewLifecycleOwner, Observer { path ->
             if(path != "")
                 binding.pdfView.fromFile(File(path)).load()
+            else
+                Toast.makeText(context, "Oznamy na tento týždeň nie sú k dispozícií.", Toast.LENGTH_LONG).show()
         })
     }
 

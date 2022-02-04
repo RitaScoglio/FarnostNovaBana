@@ -1,4 +1,4 @@
-package sk.farnost.NovaBana.massInformation
+package sk.farnost.NovaBana.download
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -11,25 +11,22 @@ import android.net.Uri
 import android.os.Environment
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.io.File
-import java.io.IOException
 import java.lang.Exception
 import java.util.ArrayList
 
 class MassInfoDownloader {
     private lateinit var filePath: String
 
-    suspend fun runDownload(context: Context, currentWeek: Int): String {
+    suspend fun runDownload(context: Context, filename: String): String {
         checkAndRequestPermissions(context)
         val fileURL = doInBackground()
-        onPostExecute(context, fileURL, currentWeek)
+        onPostExecute(context, fileURL, filename)
         return filePath
     }
 
@@ -86,11 +83,10 @@ class MassInfoDownloader {
     }
 
     @SuppressLint("Range")
-    private fun onPostExecute(context: Context, fileURL: String, currentWeek: Int) {
-        val fileName = "oznamy-${currentWeek}.pdf"
+    private fun onPostExecute(context: Context, fileURL: String, filename: String) {
         val extStorageDirectory = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
 
-        val file = File("${extStorageDirectory}/${fileName}")
+        val file = File("${extStorageDirectory}/${filename}")
 
         /*try {
             file.createNewFile()
@@ -101,7 +97,7 @@ class MassInfoDownloader {
         val request = DownloadManager.Request(Uri.parse(fileURL))
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
             .setDestinationUri(Uri.fromFile(file))
-            .setTitle(fileName)
+            .setTitle(filename)
             .setDescription("Downloading")
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
