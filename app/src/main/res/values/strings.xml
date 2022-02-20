@@ -5,4 +5,13 @@
     <string name="bottom_nav_menu_option_3">Zamyslenia</string>
     <string name="bottom_nav_menu_option_4">Kalendár</string>
     <string name="bottom_nav_menu_option_5">Kontakt</string>
+    <string name="adress_title">Adresa</string>
+    <string name="adress">Rímskokatolícka cirkev\nFarnosť Narodenia Panny Márie Nová Baňa\nAndreja Kmeťa 16\n968 01 Nová Baňa</string>
+    <string name="phone_title">Telefón</string>
+    <string name="phone">+421(0)45 68 57 011</string>
+    <string name="email_title">Email</string>
+    <string name="email">fara.novabana@gmail.com</string>
+    <string name="bank_title">Bankové spojenie</string>
+    <string name="bank">SK65 0900 0000 0000 7433 7693</string>
+    <string name="icon">icon</string>
 </resources>

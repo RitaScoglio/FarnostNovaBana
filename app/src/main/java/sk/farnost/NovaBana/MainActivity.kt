@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import sk.farnost.NovaBana.contact.ContactFragment
 import sk.farnost.NovaBana.databinding.MainActivityBinding
 import sk.farnost.NovaBana.massInformation.MassInformationFragment
 import sk.farnost.NovaBana.massInformation.MassInformationViewModel
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.initiateFirebase(getString(R.string.FirebaseURL))
+        //viewModel.initiateFirebase(getString(R.string.FirebaseURL))
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menu_contact -> {
-                    //changeFragment(ContactFragment())
+                    changeFragment(ContactFragment())
                     true
                 }
                 else -> true
