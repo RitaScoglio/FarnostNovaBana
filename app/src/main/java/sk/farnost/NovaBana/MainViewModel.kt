@@ -22,6 +22,7 @@ open class MainViewModel  : ViewModel() {
     private lateinit var calendarDatabase: DatabaseReference
     private lateinit var dayThoughtDatabase: DatabaseReference
     var status = MutableLiveData<String>()
+    var filePath = MutableLiveData<String>()
 
     internal fun initiateFirebase(url: String) {
         //when outside of america-central, need to use url -> should hide + hide auth
@@ -38,18 +39,15 @@ open class MainViewModel  : ViewModel() {
         //databaseReference.child("try").setValue("trying")
         //read
         /* myRef.addValueEventListener(object: ValueEventListener {
-
              override fun onDataChange(snapshot: DataSnapshot) {
                  // This method is called once with the initial value and again
                  // whenever data at this location is updated.
                  val value = snapshot.getValue<String>()
                  Log.d("mValue", "Value is: " + value)
              }
-
              override fun onCancelled(error: DatabaseError) {
                  Log.w("mValue", "Failed to read value.", error.toException())
              }
-
          })*/
     }
 
@@ -60,23 +58,25 @@ open class MainViewModel  : ViewModel() {
         calendar.add(Calendar.DAY_OF_YEAR, -7)
         val previousWeek = calendar.get(Calendar.WEEK_OF_YEAR)
         val path = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-        if(isConnectedToInternet(context))
-            saveCurrentWeek(path, "oznamy-${currentWeek}.pdf", context)
+        saveCurrentWeek(path, "oznamy-${currentWeek}.pdf", context)
         deletePreviousWeek("${path}/oznamy-${previousWeek}.pdf")
     }
 
     private fun saveCurrentWeek(path: File?, filename: String, context: Context) {
         val massInfoFile = File("${path}/${filename}")
         if(!massInfoFile.exists()){
-            status.value = "Sťahuje sa..."
-            val downloader = MassInfoDownloader()
-            viewModelScope.async {
-                val massInfoFilePath = downloader.runDownload(context, filename)
-                val editor = context.getSharedPreferences("MassInfo", Context.MODE_PRIVATE).edit()
-                editor.putString("filePath", massInfoFilePath)
-                editor.apply()
-            }
-            status.value = "Oznamy na tento týždeň sú k dispozícií."
+            if(isConnectedToInternet(context)) {
+                status.value = "Sťahuje sa..."
+                val downloader = MassInfoDownloader()
+                viewModelScope.async {
+                    val massInfoFilePath = downloader.runDownload(context, filename)
+                    status.value = "K dispozícií."
+                    filePath.value = massInfoFilePath
+                }
+            } else
+                filePath.value = ""
+        } else {
+            filePath.value = "${path}/${filename}"
         }
     }
 
@@ -87,7 +87,7 @@ open class MainViewModel  : ViewModel() {
     }
 
 
-    private fun isConnectedToInternet(context: Context): Boolean {
+    fun isConnectedToInternet(context: Context): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = connectivityManager.activeNetwork ?: return false
@@ -99,7 +99,7 @@ open class MainViewModel  : ViewModel() {
             }
         } else {
             @Suppress("DEPRECATION") val networkInfo =
-                connectivityManager.activeNetworkInfo ?: return false
+                    connectivityManager.activeNetworkInfo ?: return false
             @Suppress("DEPRECATION")
             return networkInfo.isConnected
         }

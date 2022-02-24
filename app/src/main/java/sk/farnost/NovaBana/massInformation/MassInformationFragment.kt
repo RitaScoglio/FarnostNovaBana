@@ -22,8 +22,8 @@ class MassInformationFragment : Fragment() {
     private lateinit var binding: MassInformationFragmentBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         binding = MassInformationFragmentBinding.inflate(inflater, container, false)
         return binding.getRoot();
@@ -31,28 +31,42 @@ class MassInformationFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        binding.pdfView.visibility = View.INVISIBLE
+
         viewModel = ViewModelProvider(this).get(MassInformationViewModel::class.java)
         download = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
-        showPDF()
         showDownloadInfo()
-        viewModel.retrieveFilePath(requireContext())
+        showPDF()
+        downloadOption()
+        //viewModel.retrieveFilePath(requireContext(), download.filePath)
     }
 
 
     private fun showPDF(){
-        viewModel.filePath.observe(viewLifecycleOwner, Observer { path ->
-            if(path != "")
+        download.filePath.observe(viewLifecycleOwner, Observer { path ->
+            if(File(path).exists()) {
                 binding.pdfView.fromFile(File(path)).load()
-            else {
+                binding.pdfView.visibility = View.VISIBLE
+                binding.downloadInfo.visibility = View.INVISIBLE
+                binding.downloadButton.visibility = View.INVISIBLE
+            } else {
                 binding.downloadInfo.setText("Oznamy na tento týždeň nie sú k dispozícií.")
-                dowloadOption()
             }
         })
     }
 
-    private fun dowloadOption() {
-
+    private fun downloadOption() {
+        binding.downloadButton.setOnClickListener {
+            if (download.isConnectedToInternet(requireContext()))
+                download.getAvailableMassInformation(requireContext())
+            else
+                Toast.makeText(
+                    requireContext(),
+                    "Nie ste pripojený na internet.",
+                    Toast.LENGTH_LONG
+                ).show();
+        }
     }
 
     private fun showDownloadInfo(){
