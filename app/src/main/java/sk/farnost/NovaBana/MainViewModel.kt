@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Environment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.DatabaseReference
@@ -20,6 +21,7 @@ open class MainViewModel  : ViewModel() {
     private lateinit var newsDatabase: DatabaseReference
     private lateinit var calendarDatabase: DatabaseReference
     private lateinit var dayThoughtDatabase: DatabaseReference
+    var status = MutableLiveData<String>()
 
     internal fun initiateFirebase(url: String) {
         //when outside of america-central, need to use url -> should hide + hide auth
@@ -66,6 +68,7 @@ open class MainViewModel  : ViewModel() {
     private fun saveCurrentWeek(path: File?, filename: String, context: Context) {
         val massInfoFile = File("${path}/${filename}")
         if(!massInfoFile.exists()){
+            status.value = "Sťahuje sa..."
             val downloader = MassInfoDownloader()
             viewModelScope.async {
                 val massInfoFilePath = downloader.runDownload(context, filename)
@@ -73,6 +76,7 @@ open class MainViewModel  : ViewModel() {
                 editor.putString("filePath", massInfoFilePath)
                 editor.apply()
             }
+            status.value = "Oznamy na tento týždeň sú k dispozícií."
         }
     }
 

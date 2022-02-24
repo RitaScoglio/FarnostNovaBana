@@ -14,4 +14,5 @@
     <string name="bank_title">Bankové spojenie</string>
     <string name="bank">SK65 0900 0000 0000 7433 7693</string>
     <string name="icon">icon</string>
+    <string name="download">Stiahnuť</string>
 </resources>

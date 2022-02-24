@@ -6,10 +6,22 @@
     android:orientation="vertical"
     tools:context=".massInformation.MassInformationFragment">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/download_info"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/download_info"
+        android:id="@+id/download_button"
+        android:text="@string/download"
+        style="@style/Button"/>
+
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/pdfView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/slider" />
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

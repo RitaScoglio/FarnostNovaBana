@@ -18,6 +18,7 @@ class MassInformationFragment : Fragment() {
         fun newInstance() = MassInformationFragment()
     }
     private lateinit var viewModel: MassInformationViewModel
+    private lateinit var download: MainViewModel
     private lateinit var binding: MassInformationFragmentBinding
 
     override fun onCreateView(
@@ -31,8 +32,10 @@ class MassInformationFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MassInformationViewModel::class.java)
+        download = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
 
         showPDF()
+        showDownloadInfo()
         viewModel.retrieveFilePath(requireContext())
     }
 
@@ -41,8 +44,20 @@ class MassInformationFragment : Fragment() {
         viewModel.filePath.observe(viewLifecycleOwner, Observer { path ->
             if(path != "")
                 binding.pdfView.fromFile(File(path)).load()
-            else
-                Toast.makeText(context, "Oznamy na tento týždeň nie sú k dispozícií.", Toast.LENGTH_LONG).show()
+            else {
+                binding.downloadInfo.setText("Oznamy na tento týždeň nie sú k dispozícií.")
+                dowloadOption()
+            }
+        })
+    }
+
+    private fun dowloadOption() {
+
+    }
+
+    private fun showDownloadInfo(){
+        download.status.observe(viewLifecycleOwner, Observer { status ->
+            binding.downloadInfo.setText(status)
         })
     }
 
